@@ -3,9 +3,9 @@ package mysite.expense.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
-import java.util.Date;
+import java.sql.Date;
+
 
 // get set toString 메소드 등 관련 전부를 다 만들어줌, 생성자 빼고
 @Data
@@ -24,7 +24,7 @@ public class ExpenseDTO {
 
     private String description;
 
-    private long amount;
+    private Long amount;
 
     private Date date;
 
