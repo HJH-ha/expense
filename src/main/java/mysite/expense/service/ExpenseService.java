@@ -2,6 +2,7 @@ package mysite.expense.service;
 
 import lombok.RequiredArgsConstructor;
 import mysite.expense.dto.ExpenseDTO;
+import mysite.expense.dto.ExpenseFilterDTO;
 import mysite.expense.entity.Expense;
 import mysite.expense.repository.ExpenseRepository;
 import mysite.expense.util.DateTimeUtil;
@@ -9,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
+import java.sql.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -88,8 +90,15 @@ public class ExpenseService {
         return mapToDTO(expense); // DTO 변환
     }
 
-    public List<ExpenseDTO> getFilterExpenses(String keyword, String sortBy) {
-        List<Expense> list = expRepo.findByNameContainingOrDescriptionContaining(keyword, keyword);
+    public List<ExpenseDTO> getFilterExpenses(ExpenseFilterDTO filter) throws ParseException {
+        String keyword = filter.getKeyword();
+        String sortBy = filter.getSortBy();
+        String startDate = filter.getStartDate();
+        String endDate = filter.getEndDate();
+        // sql 날짜로 변경 (문자열 시작일 종료일을)
+        Date startDay = !startDate.isEmpty() ? DateTimeUtil.convertStringToDate(startDate) : new Date(0);
+        Date endDay = !endDate.isEmpty() ? DateTimeUtil.convertStringToDate(endDate) : new Date(System.currentTimeMillis()) ;
+        List<Expense> list = expRepo.findByNameContainingAndDateBetween(keyword, startDay, endDay);
         List<ExpenseDTO> filterList = list.stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
@@ -101,6 +110,18 @@ public class ExpenseService {
         }
         return filterList;
     }
+
+    // 리스트의 총비용 합계
+    public Long totalExpenses(List<ExpenseDTO> expenses){
+        Long sum = expenses.stream()
+                // 객체를 숫자로 바꿈 객체 > 가격으로
+                // .mapToLong(x->x.getAmount()) 람다식
+                // map 은 원래를 다음나오는걸(???)로 변경 , to ???
+                .mapToLong(ExpenseDTO::getAmount)
+                .sum();
+        return sum;
+    }
+
 
 
 }

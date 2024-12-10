@@ -1,6 +1,6 @@
 package mysite.expense.controller;
 
-import jakarta.servlet.Filter;
+
 import lombok.RequiredArgsConstructor;
 import mysite.expense.dto.ExpenseDTO;
 import mysite.expense.dto.ExpenseFilterDTO;
@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import java.text.ParseException;
 import java.util.List;
 
 @Controller
@@ -21,10 +22,12 @@ public class ExpenseFilterController {
 
     @GetMapping("/filterExpenses")
     public String filterExpenses(@ModelAttribute("filter") ExpenseFilterDTO expenseFilterDTO,
-                                 Model model) {
+                                 Model model) throws ParseException {
          System.out.println(expenseFilterDTO);
-        List<ExpenseDTO> list = expService.getFilterExpenses(expenseFilterDTO.getKeyword(),expenseFilterDTO.getSortBy());
+        List<ExpenseDTO> list = expService.getFilterExpenses(expenseFilterDTO);
         model.addAttribute("expenses", list);
+        Long total = expService.totalExpenses(list);
+        model.addAttribute("total", total);
         return "e_list";
     }
 }
