@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.security.Principal;
+
 //인증 관련 컨트롤러
 @Controller
 @RequiredArgsConstructor
@@ -20,9 +22,13 @@ public class AuthController {
     private final UserService uService;
 
     //로그인페이지
-    @GetMapping({"/login" , "/"})
-    public String showLoginPage() {
-        return "login";
+    @GetMapping({"/login", "/"})
+    // 컨트롤러의 인증정보는 principal 에 있음!
+    public String showLoginPage(Principal principal) {
+        if(principal == null) {
+            return "login";
+        }
+        return "redirect:/expenses";
     }
 
     //등록하기 페이지(가입)
@@ -43,6 +49,6 @@ public class AuthController {
         }
         uService.save(user);
         model.addAttribute("successMsg", true);
-        return "/login"; // 로그인 페이지
+        return "/response"; // 로그인 페이지
     }
 }

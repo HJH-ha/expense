@@ -6,6 +6,7 @@ import mysite.expense.dto.ExpenseDTO;
 import mysite.expense.dto.ExpenseFilterDTO;
 import mysite.expense.entity.Expense;
 import mysite.expense.service.ExpenseService;
+import mysite.expense.util.DateTimeUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,7 +29,7 @@ public class ExpenseController {
     public String showList(Model model) {
         List<ExpenseDTO> list = expService.getAllExpenses();
         model.addAttribute("expenses", list);
-        model.addAttribute("filter", new ExpenseFilterDTO());
+        model.addAttribute("filter", new ExpenseFilterDTO(DateTimeUtil.getCurrentMonthStartDate() , DateTimeUtil.getCurrentMonthDate()));
         Long total = expService.totalExpenses(list);
         model.addAttribute("total", total);
         return "e_list";
@@ -55,7 +56,7 @@ public class ExpenseController {
 
     @GetMapping("/deleteExpense")
     public String deleteExpense(@RequestParam("id") String expenseId) {
-        //System.out.println("삭제 비용 번호 : " + expenseId);
+        System.out.println("삭제 비용 번호 : " + expenseId);
         expService.deleteExpense(expenseId);
         return "redirect:/expenses";
     }

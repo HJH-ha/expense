@@ -30,4 +30,7 @@ public class Expense {
 
     private Date date;
 
+    @ManyToOne
+    private User user; // 유저 1명이 여러 비용 사용
+
 }

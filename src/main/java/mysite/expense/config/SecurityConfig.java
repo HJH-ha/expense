@@ -37,6 +37,14 @@ public class SecurityConfig {
                                 .usernameParameter("email") // 기존의 username 대신에 email 입력
                                 .passwordParameter("password")
                 )
+                .logout((logout)->
+                        logout
+                                .logoutUrl("/logout")
+                                .invalidateHttpSession(true)
+                                .clearAuthentication(true)
+                                .logoutSuccessUrl("/login?logout=true")
+                                .permitAll()
+                )
         ;
         return http.build();
     }
